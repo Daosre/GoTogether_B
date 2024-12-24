@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id String @id @default(uuid())
+  name String @db.VarChar(50) @unique
+
+  user User[]
+}
+
+model User {
+  id String @id @default(uuid())
+  roleId String 
+  firstName String @db.VarChar(30)
+  lastName String @db.VarChar(30)
+  email String @db.VarChar(320) @unique
+  userName String @db.VarChar(20) @unique
+  phone String @db.VarChar(20) @unique
+  password String @db.VarChar(255)
+  isActive Boolean @default(false)
+  token String? @db.VarChar(255)
+  gdpr Boolean @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @db.Timestamptz()
+
+  userParticipate User_Participates_Event[]
+  role Role @relation(fields: [roleId], references: [id])
+  event Event[]
+}
+
+model User_Participates_Event {
+    id String @id @default(uuid())
+    userId String
+    eventId String
+
+    user User @relation(fields: [userId], references: [id])
+    event Event @relation(fields: [eventId], references: [id])
+}
+
+model Event {
+    id String @id @default(uuid())
+    userId String
+    categoryId String
+    name String @db.VarChar(50)
+    description String @db.VarChar(500)
+    city String @db.VarChar(30)
+    address String @db.VarChar(255)
+    time DateTime
+    maxParticpants Int
+    price Float
+    createdAt DateTime @default(now()) @db.Timestamptz()
+    updatedAt DateTime @default(now()) @db.Timestamptz()
+
+    userParticipate User_Participates_Event[]
+    user User @relation(fields: [userId], references: [id])
+    category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+    id String @id @default(uuid())
+    name String @db.VarChar(50) @unique 
+
+    event Event[]
+}
