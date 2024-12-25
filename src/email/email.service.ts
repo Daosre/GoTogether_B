@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
+
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
