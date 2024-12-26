@@ -3,14 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { signinDTO, signupDTO } from './dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { Role } from 'src/utils/const';
 import { EmailService } from 'src/email/email.service';
-import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from 'src/utils/const';
+import { signinDTO, signupDTO } from './dto';
 @Injectable()
 export class AuthService {
   constructor(

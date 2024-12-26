@@ -52,8 +52,8 @@ model Event {
     city String @db.VarChar(30)
     address String @db.VarChar(255)
     time DateTime
-    maxParticpants Int
-    price Float
+    maxParticipants Int
+    price Float @db.DoublePrecision()
     createdAt DateTime @default(now()) @db.Timestamptz()
     updatedAt DateTime @default(now()) @db.Timestamptz()
 
