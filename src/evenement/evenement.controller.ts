@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { EvenementService } from './evenement.service';
+import { InsertEventDto } from './dto';
 
 @Controller('evenement')
 export class EvenementController {
@@ -8,5 +9,10 @@ export class EvenementController {
   @Get('/all')
   getAllEvenement() {
     return this.evenementService.getAllEvent()
+  }
+
+  @Post('/create')
+  insertEvenement(@Body() dto: InsertEventDto) {
+    return this.evenementService.insertEvenement(dto)
   }
 }

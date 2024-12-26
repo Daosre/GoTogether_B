@@ -32,5 +32,11 @@ export class InsertEventDto {
 
   @IsNumber()
   @IsNotEmpty()
-  maxParticpants: number
+  maxParticipants: number
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4)
+  @MaxLength(50)
+  categoryName: string
 }

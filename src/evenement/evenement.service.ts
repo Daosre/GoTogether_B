@@ -14,14 +14,21 @@ export class EvenementService {
     });
   }
 
-  async insertEvenement(dto: InsertEventDto, id: string) {
-    const existingEvent = await this.prisma.event.findUnique({
+  async insertEvenement(dto: InsertEventDto) {
+    const existingCategory = await this.prisma.category.findUnique({
       where: {
-        id: id,
+        name: dto.categoryName
       },
     });
-    if (existingEvent) {
-      throw new ForbiddenException('Id Existing');
+
+    let category = existingCategory
+    if (!existingCategory){
+      category = await this.prisma.category.create({
+        data: {
+          name: dto.categoryName
+        }
+      });
+      category = existingCategory
     }
     await this.prisma.event.create({
       data: {
