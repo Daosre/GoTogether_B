@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { signinDTO, signupDTO } from './dto';
+import { InsertEventDto, signinDTO, signupDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -54,6 +54,7 @@ export class AuthService {
         token: token,
       },
     });
+
     await this.emailService.accountConfirmation(user, newToken);
   }
   async activateAccount(token: string) {
