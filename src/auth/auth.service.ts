@@ -3,9 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InsertEventDto, signinDTO, signupDTO } from './dto';
-
-
+import { signinDTO, signupDTO } from './dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
@@ -106,7 +104,7 @@ export class AuthService {
   async signin(dto: signinDTO) {
     const existingIdentifier = await this.prisma.user.findFirst({
       where: {
-        OR: [{ userName: dto.identifiant, email: dto.identifiant }],
+        OR: [{ userName: dto.userName, email: dto.email }],
       },
       include: {
         role: true,
