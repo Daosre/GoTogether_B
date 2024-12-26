@@ -3,13 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InsertEventDto, signinDTO, signupDTO } from './dto';
+
+
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { EmailService } from 'src/email/email.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/utils/const';
-import { signinDTO, signupDTO } from './dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -20,19 +22,27 @@ export class AuthService {
   ) {}
 
   async signup(dto: signupDTO) {
-    const existingUser = await this.prisma.user.findFirst({
+    const existingEmail = await this.prisma.user.findUnique({
       where: {
-        OR: [{ email: dto.email, phone: dto.phone, userName: dto.userName }],
+        email: dto.email,
       },
     });
-    if (existingUser) {
-      if (existingUser.email === dto.email) {
-        throw new ForbiddenException('Email already taken');
-      } else if (existingUser.phone === dto.phone) {
-        throw new ForbiddenException('Phone number already taken');
-      } else if (existingUser.userName === dto.userName) {
-        throw new ForbiddenException('UserName already taken');
-      }
+    if (existingEmail) {
+      throw new ForbiddenException('Email already taken');
+    }
+    const existingPhone = await this.prisma.user.findUnique({
+      where: {
+        phone: dto.phone,
+      },
+    });
+    if (existingPhone) {
+      throw new ForbiddenException('Phone number already taken');
+    }
+    const existingUserName = await this.prisma.user.findUnique({
+      where: { userName: dto.userName },
+    });
+    if (existingUserName) {
+      throw new ForbiddenException('UserName already taken');
     }
     const hash = await argon.hash(dto.password);
     const token = await argon.hash(dto.email);
@@ -53,6 +63,7 @@ export class AuthService {
         token: token,
       },
     });
+
     await this.emailService.accountConfirmation(user, newToken);
   }
   async activateAccount(token: string) {
@@ -93,9 +104,9 @@ export class AuthService {
     };
   }
   async signin(dto: signinDTO) {
-    const existingIdentifier = await this.prisma.user.findUnique({
+    const existingIdentifier = await this.prisma.user.findFirst({
       where: {
-        userName: dto.identifiant,
+        OR: [{ userName: dto.identifiant, email: dto.identifiant }],
       },
       include: {
         role: true,
@@ -119,6 +130,8 @@ export class AuthService {
         existingIdentifier.role.name,
         '30d',
       );
+    } else {
+      throw new ForbiddenException('Crendential invalid');
     }
   }
 }
