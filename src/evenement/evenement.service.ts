@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InsertEventDto, UpdateEventDto } from './dto';
 
+
 @Injectable()
 export class EvenementService {
   constructor(private prisma: PrismaService) {}
