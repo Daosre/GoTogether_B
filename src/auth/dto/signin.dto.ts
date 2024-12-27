@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class signinDTO {
+
   @IsString()
   @IsNotEmpty()
-  identifiant: string;
+  identifiant: string
 
   @IsString()
   @IsNotEmpty()
