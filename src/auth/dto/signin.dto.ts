@@ -4,12 +4,7 @@ export class signinDTO {
 
   @IsString()
   @IsNotEmpty()
-  userName: string
-  
-  @IsString()
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  identifiant: string
 
   @IsString()
   @IsNotEmpty()
