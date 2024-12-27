@@ -45,6 +45,11 @@ export class CategoryService {
     if (!existingCategory) {
       throw new ForbiddenException(' Unexisting Id');
     }
+    await this.prisma.event.deleteMany({
+      where: {
+        categoryId: id
+      },
+    });
     await this.prisma.category.delete({
       where: {
         id: id,

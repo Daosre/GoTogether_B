@@ -12,6 +12,13 @@ export class EvenementService {
       orderBy: {
         id: 'asc',
       },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 
@@ -29,8 +36,9 @@ export class EvenementService {
           name: dto.categoryName,
         },
       });
-      category = existingCategory;
     }
+    delete dto.categoryName;
+
     await this.prisma.event.create({
       data: {
         ...dto,
@@ -47,7 +55,7 @@ export class EvenementService {
         id: id,
       },
     });
-    if (existingEvenement) {
+    if (!existingEvenement) {
       throw new ForbiddenException('Unexisting Id');
     }
     const existingCategory = await this.prisma.category.findUnique({
@@ -63,15 +71,16 @@ export class EvenementService {
           name: dto.categoryName,
         },
       });
-      category = existingCategory;
     }
+    delete dto.categoryName;
+
     await this.prisma.event.update({
       where: {
         id: id,
       },
       data: {
         ...dto,
-        categoryId: category.id
+        categoryId: category.id,
       },
     });
     return { message: 'Updated' };
