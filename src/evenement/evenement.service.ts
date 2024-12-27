@@ -1,6 +1,7 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InsertEventDto } from './dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class EvenementService {
@@ -14,27 +15,27 @@ export class EvenementService {
     });
   }
 
-  async insertEvenement(dto: InsertEventDto) {
+  async insertEvenement(dto: InsertEventDto, user: User) {
     const existingCategory = await this.prisma.category.findUnique({
       where: {
-        name: dto.categoryName
+        name: dto.categoryName,
       },
     });
 
-    let category = existingCategory
-    if (!existingCategory){
+    let category = existingCategory;
+    if (!existingCategory) {
       category = await this.prisma.category.create({
         data: {
-          name: dto.categoryName
-        }
+          name: dto.categoryName,
+        },
       });
-      category = existingCategory
+      category = existingCategory;
     }
     await this.prisma.event.create({
       data: {
         ...dto,
-        category: { connect: { id: 'id' } },
-        user: { connect: { id: 'id' } },
+        categoryId: existingCategory.id,
+        userId: user.id,
       },
     });
     return { message: 'Success' };
