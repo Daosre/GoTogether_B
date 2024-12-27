@@ -31,6 +31,8 @@ export class EvenementService {
       });
       category = existingCategory;
     }
+    console.log(existingCategory, user);
+    delete dto.categoryName;
     await this.prisma.event.create({
       data: {
         ...dto,
