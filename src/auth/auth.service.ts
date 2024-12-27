@@ -10,7 +10,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { Role } from 'src/utils/const';
 import { EmailService } from 'src/email/email.service';
-import { User } from '@prisma/client';
 @Injectable()
 export class AuthService {
   constructor(
@@ -60,6 +59,7 @@ export class AuthService {
     });
 
     await this.emailService.accountConfirmation(user, newToken);
+    return { message: 'Check your email for validate your account!' };
   }
   async activateAccount(token: string) {
     const existingUser = await this.prisma.user.findFirst({
