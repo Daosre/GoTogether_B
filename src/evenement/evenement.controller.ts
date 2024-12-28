@@ -30,7 +30,6 @@ export class EvenementController {
   insertEvenement(@Body() dto: InsertEventDto, @GetUser() user: User) {
     return this.evenementService.insertEvenement(dto, user);
   }
-
   @Patch('/update/:id')
   updateEvenement(@Body() dto: UpdateEventDto, @Param('id') id: string) {
     return this.evenementService.updateEvenement(dto, id);
