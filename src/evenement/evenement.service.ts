@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { InsertEventDto, UpdateEventDto } from './dto';
 import { pagination } from 'src/utils/pagination';
 import { sentenceCase } from 'src/utils/sentenceCase';
+import { isNextPage } from 'src/utils/isNextPage';
 
 @Injectable()
 export class EvenementService {
@@ -19,12 +20,7 @@ export class EvenementService {
         name: search ? search : '',
       },
     });
-    return await this.prisma.event.findMany({
-      skip: skip,
-      take: take,
-      orderBy: {
-        id: 'asc',
-      },
+    const countEvent = await this.prisma.event.count({
       where: {
         city: { contains: location },
         OR: [
@@ -34,18 +30,40 @@ export class EvenementService {
           },
         ],
       },
-      omit: {
-        userId: true,
-        categoryId: true,
-      },
-      include: {
-        category: {
-          select: {
-            name: true,
+    });
+    const nextPage = isNextPage(countEvent, pagination(query.page + 1, take));
+    return {
+      data: await this.prisma.event.findMany({
+        skip: skip,
+        take: take,
+        orderBy: {
+          id: 'asc',
+        },
+        where: {
+          city: { contains: location },
+          OR: [
+            { name: { contains: search } },
+            {
+              categoryId: existingCategory ? existingCategory.id : '',
+            },
+          ],
+        },
+        omit: {
+          userId: true,
+          categoryId: true,
+          updatedAt: true,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-    });
+      }),
+      countEvent: countEvent,
+      isNextPage: nextPage,
+    };
   }
   async insertEvenement(dto: InsertEventDto, user: User) {
     dto.categoryName = sentenceCase(dto.categoryName);
