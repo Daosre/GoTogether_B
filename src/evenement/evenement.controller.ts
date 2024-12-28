@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
@@ -19,11 +20,12 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 export class EvenementController {
   constructor(private readonly evenementService: EvenementService) {}
 
-  @Get('/all')
-  getAllEvenement() {
-    return this.evenementService.getAllEvent();
+  @Get('/search')
+  searchEvent(@Query() query: any) {
+    return this.evenementService.searchEvent(query);
   }
-
+  @Get('/:id')
+  getById() {}
   @Post('/create')
   insertEvenement(@Body() dto: InsertEventDto, @GetUser() user: User) {
     return this.evenementService.insertEvenement(dto, user);

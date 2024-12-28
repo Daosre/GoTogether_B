@@ -2,15 +2,40 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InsertEventDto, UpdateEventDto } from './dto';
+import { pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class EvenementService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllEvent() {
-    return this.prisma.event.findMany({
+  async searchEvent(query: any) {
+    const take = 10;
+    const skip = pagination(query.page, take);
+    const search = query.search;
+    const location = query.location;
+    const existingCategory = await this.prisma.category.findUnique({
+      where: {
+        name: search ? search : '',
+      },
+    });
+    return await this.prisma.event.findMany({
+      skip: skip,
+      take: take,
       orderBy: {
         id: 'asc',
+      },
+      where: {
+        city: { contains: location },
+        OR: [
+          { name: { contains: search } },
+          {
+            categoryId: existingCategory ? existingCategory.id : '',
+          },
+        ],
+      },
+      omit: {
+        userId: true,
+        categoryId: true,
       },
       include: {
         category: {
