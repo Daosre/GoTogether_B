@@ -65,6 +65,63 @@ export class EvenementService {
       isNextPage: nextPage,
     };
   }
+  async searchMyEvent(query: any, user: User) {
+    const take = 10;
+    const skip = pagination(query.page, take);
+    const search = query.search;
+    const location = query.location;
+    const existingCategory = await this.prisma.category.findUnique({
+      where: {
+        name: search ? search : '',
+      },
+    });
+    const countEvent = await this.prisma.event.count({
+      where: {
+        userId: user.id,
+        city: { contains: location },
+        OR: [
+          { name: { contains: search } },
+          {
+            categoryId: existingCategory ? existingCategory.id : '',
+          },
+        ],
+      },
+    });
+    const nextPage = isNextPage(countEvent, pagination(query.page + 1, take));
+    return {
+      data: await this.prisma.event.findMany({
+        skip: skip,
+        take: take,
+        orderBy: {
+          id: 'asc',
+        },
+        where: {
+          userId: user.id,
+          city: { contains: location },
+          OR: [
+            { name: { contains: search } },
+            {
+              categoryId: existingCategory ? existingCategory.id : '',
+            },
+          ],
+        },
+        omit: {
+          // userId: true,
+          categoryId: true,
+          updatedAt: true,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      countEvent: countEvent,
+      isNextPage: nextPage,
+    };
+  }
   async insertEvenement(dto: InsertEventDto, user: User) {
     dto.categoryName = sentenceCase(dto.categoryName);
     const existingCategory = await this.prisma.category.findUnique({
