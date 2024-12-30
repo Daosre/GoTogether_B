@@ -54,11 +54,17 @@ export class EvenementService {
           updatedAt: true,
         },
         include: {
+          _count: {
+            select: {
+              userParticipate: true,
+            },
+          },
           category: {
             select: {
               name: true,
             },
           },
+          
         },
       }),
       countEvent: countEvent,
@@ -111,6 +117,11 @@ export class EvenementService {
           updatedAt: true,
         },
         include: {
+          _count: {
+            select: {
+              userParticipate: true,
+            },
+          },
           category: {
             select: {
               name: true,
