@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { UpdateCategory } from './dto';
 
@@ -9,6 +9,11 @@ export class CategoryController {
   @Get('/all')
   getAllCategory() {
     return this.categoryService.getAllCategory();
+  }
+
+  @Get('/search')
+  searchCategory(@Query() query: any){
+    return this.categoryService.searchCategory(query)
   }
 
   @Patch('/update/:id')
