@@ -37,7 +37,7 @@ export class EvenementService {
         skip: skip,
         take: take,
         orderBy: {
-          id: 'asc',
+          createdAt: 'asc',
         },
         where: {
           city: { contains: location },
@@ -64,7 +64,6 @@ export class EvenementService {
               name: true,
             },
           },
-          
         },
       }),
       countEvent: countEvent,
@@ -99,7 +98,7 @@ export class EvenementService {
         skip: skip,
         take: take,
         orderBy: {
-          id: 'asc',
+          createdAt: 'asc',
         },
         where: {
           userId: user.id,

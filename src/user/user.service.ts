@@ -6,10 +6,62 @@ import {
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, userJwt } from 'src/utils/const';
+import { isNextPage } from 'src/utils/isNextPage';
+import { pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
+  async searchUser(query: any) {
+    const take = 10;
+    const skip = pagination(query.page, take);
+    const search = query.search;
+    const countUser = await this.prisma.user.count({
+      where: {
+        OR: [
+          { email: { contains: search } },
+          { userName: { contains: search } },
+          { phone: { contains: search } },
+        ],
+      },
+    });
+    const nextPage = isNextPage(countUser, pagination(query.page + 1, take));
+    return {
+      data: await this.prisma.user.findMany({
+        skip: skip,
+        take: take,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: {
+          OR: [
+            { email: { contains: search } },
+            { userName: { contains: search } },
+            { phone: { contains: search } },
+          ],
+        },
+      }),
+      isNextPage: nextPage,
+    };
+  }
+
+  async deleteUser(id: string) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+    await this.prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+    return { message: 'User delete' };
+  }
+
   async participate(id: string, user: User) {
     const existingEvent = await this.prisma.event.findUnique({
       where: { id: id },
