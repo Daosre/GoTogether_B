@@ -8,6 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, userJwt } from 'src/utils/const';
 import { isNextPage } from 'src/utils/isNextPage';
 import { pagination } from 'src/utils/pagination';
+import { updateUserDTO } from './dto/user.update.dto';
 
 @Injectable()
 export class UserService {
@@ -44,7 +45,25 @@ export class UserService {
       isNextPage: nextPage,
     };
   }
-
+  async updateUser(id: string, dto: updateUserDTO) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+    await this.prisma.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        ...dto,
+      },
+    });
+    return { message: 'Updated successfully' };
+  }
   async deleteUser(id: string) {
     const existingUser = await this.prisma.user.findUnique({
       where: {

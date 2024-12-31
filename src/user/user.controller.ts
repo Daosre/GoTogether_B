@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -13,6 +14,7 @@ import { GetUser } from 'src/auth/decorator';
 import { User } from '@prisma/client';
 import { userJwt } from 'src/utils/const';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
+import { updateUserDTO } from './dto/user.update.dto';
 
 @UseGuards(JwtGuard)
 @Controller('user')
@@ -41,7 +43,11 @@ export class UserController {
   searchUser(@Query() query: any) {
     return this.userService.searchUser(query);
   }
-  
+  @UseGuards(AdminGuard)
+  @Patch("/:id")
+  updateUser(@Param("id") id:string,@Body() dto:updateUserDTO){
+    return this.userService.updateUser(id,dto)
+  }
   @UseGuards(AdminGuard)
   @Delete('/:id')
   deleteUser(@Param('id') id: string) {
