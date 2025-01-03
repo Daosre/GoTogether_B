@@ -111,7 +111,7 @@ export class EvenementService {
           ],
         },
         omit: {
-          // userId: true,
+          userId: true,
           categoryId: true,
           updatedAt: true,
         },
@@ -132,6 +132,16 @@ export class EvenementService {
       isNextPage: nextPage,
     };
   }
+  async getById(id: string) {
+    return {
+      data: await this.prisma.event.findUnique({
+        where: {
+          id: id,
+        },
+      }),
+    };
+  }
+
   async insertEvenement(dto: InsertEventDto, user: User) {
     dto.categoryName = sentenceCase(dto.categoryName);
     const existingCategory = await this.prisma.category.findUnique({

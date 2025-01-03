@@ -24,12 +24,14 @@ export class EvenementController {
   searchEvent(@Query() query: any) {
     return this.evenementService.searchEvent(query);
   }
-  @Get("/searchMyEvent")
-  searchMyEvent(@Query() query:any, @GetUser() user:User){
-    return this.evenementService.searchMyEvent(query,user)
+  @Get('/searchMyEvent')
+  searchMyEvent(@Query() query: any, @GetUser() user: User) {
+    return this.evenementService.searchMyEvent(query, user);
   }
   @Get('/:id')
-  getById() {}
+  getById(@Param('id') id: string) {
+    return this.evenementService.getById(id);
+  }
   @Post('/create')
   insertEvenement(@Body() dto: InsertEventDto, @GetUser() user: User) {
     return this.evenementService.insertEvenement(dto, user);
