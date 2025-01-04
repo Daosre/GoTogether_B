@@ -1,2 +1,1 @@
-export * from './insert.dto';
-export * from './update.dto';
+export * from './event.dto';

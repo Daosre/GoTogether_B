@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { InsertEventDto, UpdateEventDto } from './dto';
+import { eventDto } from './dto';
 import { EvenementService } from './evenement.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
@@ -33,11 +33,11 @@ export class EvenementController {
     return this.evenementService.getById(id);
   }
   @Post('/create')
-  insertEvenement(@Body() dto: InsertEventDto, @GetUser() user: User) {
+  insertEvenement(@Body() dto: eventDto, @GetUser() user: User) {
     return this.evenementService.insertEvenement(dto, user);
   }
   @Patch('/update/:id')
-  updateEvenement(@Body() dto: UpdateEventDto, @Param('id') id: string) {
+  updateEvenement(@Body() dto: eventDto, @Param('id') id: string) {
     return this.evenementService.updateEvenement(dto, id);
   }
 
