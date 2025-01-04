@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { InsertEventDto, UpdateEventDto } from './dto';
 import { pagination } from 'src/utils/pagination';
 import { sentenceCase } from 'src/utils/sentenceCase';
 import { isNextPage } from 'src/utils/isNextPage';
+import { eventDto } from './dto';
 
 @Injectable()
 export class EvenementService {
@@ -133,16 +133,18 @@ export class EvenementService {
     };
   }
   async getById(id: string) {
-    return {
-      data: await this.prisma.event.findUnique({
-        where: {
-          id: id,
-        },
-      }),
-    };
+    const existingEvent = await this.prisma.event.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!existingEvent) {
+      throw new ForbiddenException('Event not found');
+    }
+    return { data: existingEvent };
   }
 
-  async insertEvenement(dto: InsertEventDto, user: User) {
+  async insertEvenement(dto: eventDto, user: User) {
     dto.categoryName = sentenceCase(dto.categoryName);
     const existingCategory = await this.prisma.category.findUnique({
       where: {
@@ -170,7 +172,7 @@ export class EvenementService {
     return { message: 'Success' };
   }
 
-  async updateEvenement(dto: UpdateEventDto, id: string) {
+  async updateEvenement(dto: eventDto, id: string) {
     dto.categoryName = sentenceCase(dto.categoryName);
     const existingEvenement = await this.prisma.event.findUnique({
       where: {
