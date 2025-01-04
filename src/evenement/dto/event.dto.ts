@@ -34,9 +34,10 @@ export class eventDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
+  @MinLength(3)
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Date ' })
   @IsString()
   @IsNotEmpty()
   time: string;

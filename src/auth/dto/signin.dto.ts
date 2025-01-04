@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class signinDTO {
-  @ApiProperty()
+  @ApiProperty({ description: 'Email or userName' })
   @IsString()
   @IsNotEmpty()
   identifiant: string;
