@@ -1,16 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsString,
+  Max,
   MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
 
 export class eventDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsNotEmpty()
   @MinLength(10)
@@ -44,12 +45,14 @@ export class eventDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsNotEmpty()
   @Min(0)
+  @Max(9999)
   price: number;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  @Min(1)
+  @Min(2)
+  @Max(999)
   @IsInt()
   maxParticipants: number;
 
