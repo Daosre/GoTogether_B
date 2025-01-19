@@ -14,7 +14,7 @@ export class eventDto {
   @ApiPropertyOptional()
   @IsString()
   @IsNotEmpty()
-  @MinLength(10)
+  @MinLength(3)
   @MaxLength(50)
   name: string;
 
