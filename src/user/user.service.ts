@@ -14,7 +14,7 @@ import { updateUserDTO } from './dto/user.update.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
   async searchUser(query: any) {
-    const take = 10;
+    const take = 2;
     const skip = pagination(query.page, take);
     const search = query.search;
     const countUser = await this.prisma.user.count({
@@ -82,6 +82,24 @@ export class UserService {
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
+    await this.prisma.user_Participates_Event.deleteMany({
+      where: {
+        OR: [
+          {
+            event: {
+              userId: id,
+            },
+          },
+          { userId: id },
+        ],
+      },
+    });
+
+    await this.prisma.event.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
     await this.prisma.user.delete({
       where: {
         id: id,
