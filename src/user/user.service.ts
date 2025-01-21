@@ -14,7 +14,7 @@ import { updateUserDTO } from './dto/user.update.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
   async searchUser(query: any) {
-    const take = 1;
+    const take = 10;
     const skip = pagination(query.page, take);
     const search = query.search;
     const countUser = await this.prisma.user.count({
