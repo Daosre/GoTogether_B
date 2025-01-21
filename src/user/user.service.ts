@@ -41,6 +41,12 @@ export class UserService {
             { phone: { contains: search } },
           ],
         },
+        omit: {
+          roleId: true,
+          gdpr: true,
+          token: true,
+          password: true,
+        },
       }),
       isNextPage: nextPage,
     };
