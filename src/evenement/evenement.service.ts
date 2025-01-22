@@ -67,6 +67,11 @@ export class EvenementService {
               name: true,
             },
           },
+          user: {
+            select: {
+              userName: true,
+            },
+          },
         },
       }),
       countEvent: countEvent,
