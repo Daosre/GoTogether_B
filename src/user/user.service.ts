@@ -26,7 +26,10 @@ export class UserService {
         ],
       },
     });
-    const nextPage = isNextPage(countUser, pagination(query.page + 1, take));
+    const nextPage = isNextPage(
+      countUser,
+      pagination(Number(query.page) + 1, take),
+    );
     return {
       data: await this.prisma.user.findMany({
         skip: skip,
@@ -79,6 +82,24 @@ export class UserService {
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
+    await this.prisma.user_Participates_Event.deleteMany({
+      where: {
+        OR: [
+          {
+            event: {
+              userId: id,
+            },
+          },
+          { userId: id },
+        ],
+      },
+    });
+
+    await this.prisma.event.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
     await this.prisma.user.delete({
       where: {
         id: id,

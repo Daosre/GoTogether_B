@@ -31,7 +31,10 @@ export class EvenementService {
         ],
       },
     });
-    const nextPage = isNextPage(countEvent, pagination(query.page + 1, take));
+    const nextPage = isNextPage(
+      countEvent,
+      pagination(Number(query.page) + 1, take),
+    );
     return {
       data: await this.prisma.event.findMany({
         skip: skip,
@@ -64,6 +67,11 @@ export class EvenementService {
               name: true,
             },
           },
+          user: {
+            select: {
+              userName: true,
+            },
+          },
         },
       }),
       countEvent: countEvent,
@@ -92,7 +100,10 @@ export class EvenementService {
         ],
       },
     });
-    const nextPage = isNextPage(countEvent, pagination(query.page + 1, take));
+    const nextPage = isNextPage(
+      countEvent,
+      pagination(Number(query.page) + 1, take),
+    );
     return {
       data: await this.prisma.event.findMany({
         skip: skip,
