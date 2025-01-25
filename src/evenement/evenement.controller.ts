@@ -39,8 +39,8 @@ export class EvenementController {
     return this.evenementService.searchMyEvent(query, user);
   }
   @Get('/:id')
-  getById(@Param('id') id: string) {
-    return this.evenementService.getById(id);
+  getById(@Param('id') id: string, @Query() query: any) {
+    return this.evenementService.getById(id, query);
   }
   @Throttle({ default: { ttl: 60000, limit: 4 } })
   @UseGuards(JwtGuard)
