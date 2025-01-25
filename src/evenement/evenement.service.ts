@@ -199,7 +199,8 @@ export class EvenementService {
       isNextPage: nextPage,
     };
   }
-  async getById(id: string) {
+  async getById(id: string, query: any) {
+    let userId = query.id;
     const existingEvent = await this.prisma.event.findUnique({
       where: {
         id: id,
@@ -221,7 +222,16 @@ export class EvenementService {
     if (!existingEvent) {
       throw new ForbiddenException('Event not found');
     }
-    return { data: existingEvent };
+    const userParticipate = await this.prisma.user_Participates_Event.findFirst(
+      {
+        where: {
+          userId: userId,
+          eventId: existingEvent.id,
+        },
+      },
+    );
+    const isParticipate = userParticipate ? true : false;
+    return { data: existingEvent, isParticipate: isParticipate };
   }
 
   async insertEvenement(dto: eventDto, user: User) {
