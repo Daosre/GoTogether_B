@@ -19,7 +19,14 @@ import { Throttle } from '@nestjs/throttler';
 @Controller('evenement')
 export class EvenementController {
   constructor(private readonly evenementService: EvenementService) {}
-
+  @Get('/mostRecent')
+  mostRecent() {
+    return this.evenementService.mostRecent();
+  }
+  @Get('/mostPopular')
+  mostPopular() {
+    return this.evenementService.mostPopular();
+  }
   @Throttle({ default: { ttl: 10000, limit: 10 } })
   @Get('/search')
   searchEvent(@Query() query: any) {

@@ -10,6 +10,62 @@ import { eventDto } from './dto';
 export class EvenementService {
   constructor(private prisma: PrismaService) {}
 
+  async mostRecent() {
+    return {
+      data: await this.prisma.event.findMany({
+        include: {
+          _count: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              userName: true,
+            },
+          },
+        },
+        omit: {
+          userId: true,
+          categoryId: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        take: 4,
+      }),
+    };
+  }
+  async mostPopular() {
+    return {
+      data: await this.prisma.event.findMany({
+        include: {
+          _count: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              userName: true,
+            },
+          },
+        },
+        orderBy: {
+          userParticipate: { _count: 'desc' },
+        },
+        omit: {
+          userId: true,
+          categoryId: true,
+          updatedAt: true,
+        },
+        take: 4,
+      }),
+    };
+  }
   async searchEvent(query: any) {
     const take = 10;
     const skip = pagination(query.page, take);
@@ -147,6 +203,19 @@ export class EvenementService {
     const existingEvent = await this.prisma.event.findUnique({
       where: {
         id: id,
+      },
+      include: {
+        _count: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            userName: true,
+          },
+        },
       },
     });
     if (!existingEvent) {
