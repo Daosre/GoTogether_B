@@ -96,7 +96,7 @@ export class EvenementService {
         skip: skip,
         take: take,
         orderBy: {
-          createdAt: 'asc',
+          createdAt: 'desc',
         },
         where: {
           city: { contains: location },
@@ -165,7 +165,7 @@ export class EvenementService {
         skip: skip,
         take: take,
         orderBy: {
-          createdAt: 'asc',
+          createdAt: 'desc',
         },
         where: {
           userId: user.id,
