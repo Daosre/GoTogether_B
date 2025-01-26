@@ -205,6 +205,11 @@ export class EvenementService {
       where: {
         id: id,
       },
+      omit: {
+        userId: true,
+        categoryId: true,
+        updatedAt: true,
+      },
       include: {
         _count: true,
         category: {
