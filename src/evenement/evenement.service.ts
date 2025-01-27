@@ -1,10 +1,15 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { pagination } from 'src/utils/pagination';
 import { sentenceCase } from 'src/utils/sentenceCase';
 import { isNextPage } from 'src/utils/isNextPage';
 import { eventDto } from './dto';
+import { Role, userJwt } from 'src/utils/const';
 
 @Injectable()
 export class EvenementService {
@@ -370,7 +375,7 @@ export class EvenementService {
     return { message: 'Updated' };
   }
 
-  async deleteEvenement(id: string) {
+  async deleteEvenement(id: string, user: userJwt) {
     const existingEvenement = await this.prisma.event.findUnique({
       where: {
         id: id,
@@ -379,6 +384,14 @@ export class EvenementService {
     if (!existingEvenement) {
       throw new ForbiddenException('Unexising Id');
     }
+    if (existingEvenement.userId !== user.id && user.role.name !== Role.ADMIN) {
+      throw new UnauthorizedException('You are not authorized !');
+    }
+    await this.prisma.user_Participates_Event.deleteMany({
+      where: {
+        eventId: id,
+      },
+    });
     await this.prisma.event.delete({
       where: {
         id: id,
