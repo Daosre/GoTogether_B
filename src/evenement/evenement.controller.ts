@@ -38,6 +38,12 @@ export class EvenementController {
   searchMyEvent(@Query() query: any, @GetUser() user: User) {
     return this.evenementService.searchMyEvent(query, user);
   }
+  @Throttle({ default: { ttl: 10000, limit: 10 } })
+  @UseGuards(JwtGuard)
+  @Get('/searchMyParticipations')
+  searchMyParticipations(@Query() query: any, @GetUser() user: User) {
+    return this.evenementService.searchMyParticipations(query, user);
+  }
   @Get('/:id')
   getById(@Param('id') id: string, @Query() query: any) {
     return this.evenementService.getById(id, query);

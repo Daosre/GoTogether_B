@@ -199,6 +199,71 @@ export class EvenementService {
       isNextPage: nextPage,
     };
   }
+  async searchMyParticipations(query: any, user: User) {
+    const take = 10;
+    const skip = pagination(query.page, take);
+    const search = query.search;
+    const location = query.location;
+    const existingCategory = await this.prisma.category.findUnique({
+      where: {
+        name: search ? search : '',
+      },
+    });
+    const countEvent = await this.prisma.event.count({
+      where: {
+        userParticipate: { some: { userId: user.id } },
+        city: { contains: location },
+        OR: [
+          { name: { contains: search } },
+          {
+            categoryId: existingCategory ? existingCategory.id : '',
+          },
+        ],
+      },
+    });
+    const nextPage = isNextPage(
+      countEvent,
+      pagination(Number(query.page) + 1, take),
+    );
+    return {
+      data: await this.prisma.event.findMany({
+        skip: skip,
+        take: take,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: {
+          userParticipate: { some: { userId: user.id } },
+          city: { contains: location },
+          OR: [
+            { name: { contains: search } },
+            {
+              categoryId: existingCategory ? existingCategory.id : '',
+            },
+          ],
+        },
+        omit: {
+          userId: true,
+          categoryId: true,
+          updatedAt: true,
+        },
+        include: {
+          _count: {
+            select: {
+              userParticipate: true,
+            },
+          },
+          category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      countEvent: countEvent,
+      isNextPage: nextPage,
+    };
+  }
   async getById(id: string, query: any) {
     let userId = query.id;
     const existingEvent = await this.prisma.event.findUnique({
