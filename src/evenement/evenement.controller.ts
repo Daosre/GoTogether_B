@@ -58,8 +58,8 @@ export class EvenementController {
   @Throttle({ default: { ttl: 60000, limit: 4 } })
   @UseGuards(JwtGuard)
   @Patch('/update/:id')
-  updateEvenement(@Body() dto: eventDto, @Param('id') id: string) {
-    return this.evenementService.updateEvenement(dto, id);
+  updateEvenement(@Body() dto: eventDto, @Param('id') id: string, @GetUser() user:userJwt) {
+    return this.evenementService.updateEvenement(dto, id,user);
   }
   @UseGuards(JwtGuard)
   @Delete('/delete/:id')

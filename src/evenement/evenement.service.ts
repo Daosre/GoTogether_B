@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
@@ -297,6 +298,18 @@ export class EvenementService {
     if (!existingEvent) {
       throw new ForbiddenException('Event not found');
     }
+    let isCreator = false;
+    if (userId) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      if (!existingUser) {
+        throw new NotFoundException('User not found');
+      }
+      if (existingUser.userName === existingEvent.user.userName) {
+        isCreator = true;
+      }
+    }
     const userParticipate = await this.prisma.user_Participates_Event.findFirst(
       {
         where: {
@@ -306,7 +319,12 @@ export class EvenementService {
       },
     );
     const isParticipate = userParticipate ? true : false;
-    return { data: existingEvent, isParticipate: isParticipate };
+
+    return {
+      data: existingEvent,
+      isParticipate: isParticipate,
+      isCreator: isCreator,
+    };
   }
 
   async insertEvenement(dto: eventDto, user: User) {
@@ -337,7 +355,7 @@ export class EvenementService {
     return { message: 'Success' };
   }
 
-  async updateEvenement(dto: eventDto, id: string) {
+  async updateEvenement(dto: eventDto, id: string, user: userJwt) {
     dto.categoryName = sentenceCase(dto.categoryName);
     const existingEvenement = await this.prisma.event.findUnique({
       where: {
@@ -346,6 +364,9 @@ export class EvenementService {
     });
     if (!existingEvenement) {
       throw new ForbiddenException('Unexisting Id');
+    }
+    if (existingEvenement.userId !== user.id && user.role.name !== Role.ADMIN) {
+      throw new UnauthorizedException('You are not authorized !');
     }
     const existingCategory = await this.prisma.category.findUnique({
       where: {
