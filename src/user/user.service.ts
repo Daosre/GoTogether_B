@@ -173,7 +173,6 @@ export class UserService {
         include: {
           user: {
             select: {
-              id: true,
               userName: true,
             },
           },

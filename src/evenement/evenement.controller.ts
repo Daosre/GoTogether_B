@@ -15,6 +15,7 @@ import { eventDto } from './dto';
 import { EvenementService } from './evenement.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Throttle } from '@nestjs/throttler';
+import { userJwt } from 'src/utils/const';
 
 @Controller('evenement')
 export class EvenementController {
@@ -57,12 +58,12 @@ export class EvenementController {
   @Throttle({ default: { ttl: 60000, limit: 4 } })
   @UseGuards(JwtGuard)
   @Patch('/update/:id')
-  updateEvenement(@Body() dto: eventDto, @Param('id') id: string) {
-    return this.evenementService.updateEvenement(dto, id);
+  updateEvenement(@Body() dto: eventDto, @Param('id') id: string, @GetUser() user:userJwt) {
+    return this.evenementService.updateEvenement(dto, id,user);
   }
   @UseGuards(JwtGuard)
   @Delete('/delete/:id')
-  deleteEvenement(@Param('id') id: string) {
-    return this.evenementService.deleteEvenement(id);
+  deleteEvenement(@Param('id') id: string, @GetUser() user: userJwt) {
+    return this.evenementService.deleteEvenement(id, user);
   }
 }
