@@ -16,6 +16,7 @@ import { userJwt } from 'src/utils/const';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
 import { updateUserDTO } from './dto/user.update.dto';
 import { Throttle } from '@nestjs/throttler';
+import { Cron } from '@nestjs/schedule';
 
 @UseGuards(JwtGuard)
 @Controller('user')
@@ -53,5 +54,9 @@ export class UserController {
   @Delete('/:id')
   deleteUser(@Param('id') id: string) {
     return this.userService.deleteUser(id);
+  }
+  @Cron('1 * * * * *')
+  deleteInactiveAccount() {
+    return this.userService.deleteInactiveAccount();
   }
 }
