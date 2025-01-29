@@ -206,4 +206,15 @@ export class UserService {
     });
     return { message: 'Participant unsubscribe' };
   }
+  async deleteInactiveAccount() {
+    const dateNow = new Date();
+    const dateLastMonth = new Date();
+    dateLastMonth.setDate(dateNow.getDate() - 30);
+    await this.prisma.user.deleteMany({
+      where: {
+        isActive: false,
+        createdAt: { lt: dateLastMonth },
+      },
+    });
+  }
 }
